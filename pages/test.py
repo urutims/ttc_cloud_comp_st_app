@@ -39,7 +39,8 @@ st.markdown("# 姓名判断アプリ")
 family_name = st.text_input("姓を入力してください", max_chars=16)
 first_name = st.text_input("名を入力してください", max_chars=16)
 
-birth_day = st.date_input("生年月日を入力してください", value=date(1990, 1, 1))
+birth_day = st.date_input("生年月日を入力してください", value=date(
+    1990, 1, 1), min_value=date(1900, 1, 1), max_value=date.today())
 
 if st.button("判定"):
     full_name = f"{family_name} {first_name}"
