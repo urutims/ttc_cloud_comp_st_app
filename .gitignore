@@ -1,6 +1,5 @@
 .streamlit/
 secrets.toml
-analysys/
 analysis/
 *.json
 *.key
