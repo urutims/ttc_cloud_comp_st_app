@@ -1,0 +1,9 @@
+.streamlit/
+secrets.toml
+analysys/
+analysis/
+*.json
+*.key
+*.pem
+__pycache__/
+*.pyc
