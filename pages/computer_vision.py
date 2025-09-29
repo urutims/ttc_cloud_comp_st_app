@@ -2,10 +2,12 @@ import json
 import streamlit as st
 from google.cloud import vision
 
+
 @st.cache_data
 def get_response(content):
     try:
-        credentials_dict = json.loads(st.secrets['google_credentials'], strict=False)
+        credentials_dict = json.loads(
+            st.secrets['google_credentials'], strict=False)
         client = vision.ImageAnnotatorClient.from_service_account_info(
             info=credentials_dict)
         image = vision.Image(content=content)
@@ -14,6 +16,7 @@ def get_response(content):
     except KeyError:
         st.error("Google Cloud認証情報が設定されていません。Streamlit Cloudのsecretsに設定してください。")
         return None
+
 
 st.markdown("# 画像認識アプリ")
 
@@ -30,10 +33,10 @@ if file is not None:
             if response is not None:
                 labels = response.label_annotations
                 st.write('Labels:')
-                
+
                 if response.error.message:
                     st.error(f'{response.error.message}\nfor more info on error messages, check: '
-                            'https://cloud.google.com/apis/design/errors')
+                             'https://cloud.google.com/apis/design/errors')
                 else:
                     for label in labels:
                         st.write(f"{label.description}: {label.score:.2%}")
