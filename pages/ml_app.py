@@ -7,8 +7,34 @@ MODEL_PATH = "./assets/model.pkl"
 
 @st.cache_resource
 def load_model():
+    # Compatibility Unpickler: some sklearn versions use internal classes
+    # (e.g. _RemainderColsList) that may not exist in the current sklearn.
+    # Provide a placeholder class during unpickling so the model can be loaded.
+    class CompatUnpickler(pickle.Unpickler):
+        def find_class(self, module, name):
+            if module == "sklearn.compose._column_transformer" and name == "_RemainderColsList":
+                # Minimal placeholder compatible with unpickling. Instances of
+                # this class are not used directly by the app logic, so a
+                # lightweight stub is sufficient.
+                class _RemainderColsList:
+                    def __init__(self, *args, **kwargs):
+                        pass
+
+                    def __repr__(self):
+                        return "_RemainderColsList()"
+
+                return _RemainderColsList
+            return super().find_class(module, name)
+
     with open(MODEL_PATH, "rb") as f:
-        model = pickle.load(f)
+        try:
+            model = CompatUnpickler(f).load()
+        except Exception:
+            # If the compat unpickler fails for any reason, fall back to
+            # the normal pickle loader so the original exception is raised
+            # (useful for debugging other issues).
+            f.seek(0)
+            model = pickle.load(f)
     return model
 
 
